@@ -132,12 +132,24 @@ class _CalculatorAppState extends State<CalculatorApp> {
         return;
       }
       // Don't add operator if the last character is already an operator
-      if (_expression.endsWith('+') || _expression.endsWith('-') || _expression.endsWith('*') || _expression.endsWith('/')) {
+      if (_expression.endsWith('+') || _expression.endsWith('-') || _expression.endsWith('*') || _expression.endsWith('/') || _expression.endsWith('%')) {
         // Replace the last operator
         _expression = _expression.substring(0, _expression.length - 1) + op;
       } else {
         _expression += op;
       }
+      _updateResult();
+    });
+  }
+
+  void _square() {
+    setState(() {
+      _showError = false;
+      if (_expression.isEmpty) {
+        return;
+      }
+      // Wrap the entire expression in parentheses and square it
+      _expression = '($(_expression))^2';
       _updateResult();
     });
   }
@@ -221,61 +233,65 @@ class _CalculatorAppState extends State<CalculatorApp> {
                   flex: 2,
                   child: Column(
                     children: [
-                      // Row 1: C, Backspace, /, *
+                      // Row 1: C, Backspace, x², %
                       Row(
                         children: [
                           _buildButton('C', _clear, Colors.red, Colors.white),
                           const SizedBox(width: 8),
                           _buildButton('⌫', _backspace, Colors.orange, Colors.white),
                           const SizedBox(width: 8),
+                          _buildButton('x²', _square, Colors.purple, Colors.white),
+                          const SizedBox(width: 8),
+                          _buildOperatorButton('%', () => _addOperator('%')),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      // Row 2: /, *, 7, 8
+                      Row(
+                        children: [
                           _buildOperatorButton('/', () => _addOperator('/')),
                           const SizedBox(width: 8),
                           _buildOperatorButton('*', () => _addOperator('*')),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      // Row 2: 7, 8, 9, -
-                      Row(
-                        children: [
+                          const SizedBox(width: 8),
                           _buildNumberButton('7'),
                           const SizedBox(width: 8),
                           _buildNumberButton('8'),
-                          const SizedBox(width: 8),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      // Row 3: 9, -, 4, 5
+                      Row(
+                        children: [
                           _buildNumberButton('9'),
                           const SizedBox(width: 8),
                           _buildOperatorButton('-', () => _addOperator('-')),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      // Row 3: 4, 5, 6, +
-                      Row(
-                        children: [
+                          const SizedBox(width: 8),
                           _buildNumberButton('4'),
                           const SizedBox(width: 8),
                           _buildNumberButton('5'),
-                          const SizedBox(width: 8),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      // Row 4: 6, +, 1, 2
+                      Row(
+                        children: [
                           _buildNumberButton('6'),
                           const SizedBox(width: 8),
                           _buildOperatorButton('+', () => _addOperator('+')),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      // Row 4: 1, 2, 3, =
-                      Row(
-                        children: [
+                          const SizedBox(width: 8),
                           _buildNumberButton('1'),
                           const SizedBox(width: 8),
                           _buildNumberButton('2'),
-                          const SizedBox(width: 8),
-                          _buildNumberButton('3'),
-                          const SizedBox(width: 8),
-                          _buildButton('=', _calculate, Colors.green, Colors.white),
                         ],
                       ),
                       const SizedBox(height: 8),
-                      // Row 5: 0, ., =
+                      // Row 5: 3, =, 0, .
                       Row(
                         children: [
+                          _buildNumberButton('3'),
+                          const SizedBox(width: 8),
+                          _buildButton('=', _calculate, Colors.green, Colors.white),
+                          const SizedBox(width: 8),
                           Expanded(
                             flex: 2,
                             child: _buildButton(
@@ -287,8 +303,6 @@ class _CalculatorAppState extends State<CalculatorApp> {
                           ),
                           const SizedBox(width: 8),
                           _buildNumberButton('.'),
-                          const SizedBox(width: 8),
-                          _buildButton('=', _calculate, Colors.green, Colors.white),
                         ],
                       ),
                     ],
